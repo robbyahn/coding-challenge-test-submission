@@ -43,6 +43,7 @@ body {
   font-size: 18px;
   font-family: var(--font-primary);
   background: var(--color-accent);
+  overflow-wrap: break-word;
 }
 
 main {
