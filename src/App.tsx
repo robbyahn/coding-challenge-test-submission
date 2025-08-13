@@ -59,8 +59,6 @@ function App() {
     try {
       const results = await fetchAddresses(fields.houseNumber, fields.postCode);
       setAddresses(results);
-
-      console.log(results);
   
       if (results.length === 0) {
         setError("No addresses found for this postcode and house number");
