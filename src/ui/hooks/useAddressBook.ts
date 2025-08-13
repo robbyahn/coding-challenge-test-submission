@@ -22,10 +22,19 @@ export default function useAddressBook() {
     databaseService.setItem("addresses", addresses);
   }, [addresses]);
 
-   /** Fetch addresses from backend API */
-   const fetchAddresses = async (houseNumber: string, postCode: string) => {
+  const validateNumericField = (value: string, fieldName: string) => {
+    if (!value || !/^\d+$/.test(value)) {
+      throw new Error(`${fieldName} must be a numeric string and non-empty`);
+    }
+  };
+
+  /** Fetch addresses from backend API */
+  const fetchAddresses = async (houseNumber: string, postCode: string) => {
     setFetching(true);
     try {
+      validateNumericField(postCode, "Postcode");
+      validateNumericField(houseNumber, "House number");
+
       const BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
       const res = await fetch(
         `${BASE_URL}/api/getAddresses?postcode=${encodeURIComponent(
@@ -50,7 +59,6 @@ export default function useAddressBook() {
       setFetching(false);
     }
   };
-
 
   return {
     /** Add address to the redux store */
