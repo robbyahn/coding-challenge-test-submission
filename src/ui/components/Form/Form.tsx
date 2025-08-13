@@ -1,23 +1,26 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent } from "react";
 
-import Button from '../Button/Button';
-import InputText from '../InputText/InputText';
-import $ from './Form.module.css';
+import Button from "../Button/Button";
+import InputText from "../InputText/InputText";
+import $ from "./Form.module.css";
+
+import { ButtonType } from "@/types";
 
 interface FormEntry {
   name: string;
   placeholder: string;
   // TODO: Defined a suitable type for extra props
   // This type should cover all different of attribute types
-  extraProps: any;
+  extraProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
 interface FormProps {
   label: string;
   loading: boolean;
   formEntries: FormEntry[];
-  onFormSubmit: () => void;
+  onFormSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   submitText: string;
+  submitType?: ButtonType;
 }
 
 const Form: FunctionComponent<FormProps> = ({
@@ -25,7 +28,8 @@ const Form: FunctionComponent<FormProps> = ({
   loading,
   formEntries,
   onFormSubmit,
-  submitText
+  submitText,
+  submitType = "submit",
 }) => {
   return (
     <form onSubmit={onFormSubmit}>
@@ -42,7 +46,7 @@ const Form: FunctionComponent<FormProps> = ({
           </div>
         ))}
 
-        <Button loading={loading} type="submit">
+        <Button loading={loading} type={submitType}>
           {submitText}
         </Button>
       </fieldset>

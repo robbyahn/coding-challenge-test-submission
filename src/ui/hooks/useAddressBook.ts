@@ -16,9 +16,49 @@ export default function useAddressBook() {
   const addresses = useAppSelector(selectAddress);
   const [loading, setLoading] = React.useState(true);
 
+  const [fetching, setFetching] = React.useState(false);
+
   const updateDatabase = React.useCallback(() => {
     databaseService.setItem("addresses", addresses);
   }, [addresses]);
+
+  const validateNumericField = (value: string, fieldName: string) => {
+    if (!value || !/^\d+$/.test(value)) {
+      throw new Error(`${fieldName} must be a numeric string and non-empty`);
+    }
+  };
+
+  /** Fetch addresses from backend API */
+  const fetchAddresses = async (houseNumber: string, postCode: string) => {
+    setFetching(true);
+    try {
+      validateNumericField(postCode, "Postcode");
+      validateNumericField(houseNumber, "House number");
+
+      const BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+      const res = await fetch(
+        `${BASE_URL}/api/getAddresses?postcode=${encodeURIComponent(
+          postCode
+        )}&streetnumber=${encodeURIComponent(houseNumber)}`
+      );
+
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
+
+      const data = await res.json();
+
+      // data.details is the array
+      const transformed = (data.details || []).map((addr) =>
+        transformAddress({ ...addr, houseNumber })
+      );
+
+      return transformed;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    } finally {
+      setFetching(false);
+    }
+  };
 
   return {
     /** Add address to the redux store */
@@ -46,6 +86,8 @@ export default function useAddressBook() {
       );
       setLoading(false);
     },
+    fetching,
+    fetchAddresses,
     loading,
   };
 }
