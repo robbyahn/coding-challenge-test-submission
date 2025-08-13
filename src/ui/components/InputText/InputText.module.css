@@ -6,4 +6,8 @@
   max-width: var(--width-input);
   padding: 0.5em;
   width: 100%;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
